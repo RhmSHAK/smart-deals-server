@@ -33,16 +33,31 @@ async function run() {
 
     const database = client.db("smartDealsDB");
     const productsCollection = database.collection("products");
+    const bidsCollection = database.collection("bids");
+
+
+    //products api--------------------------------------------------------
 
     app.get('/products', async (req, res) => {
-        const cursor = productsCollection.find();
+        // const cursor = productsCollection.find().sort({price_min: -1}).skip(3).limit(3).project({_id: 0,title: 1, price_min: 1,email: 1});
+
+        console.log(req.query)
+        const email = req.query.email;
+        console.log(email)
+        const query = {};
+        if(email){
+            query.email = email;
+        }
+        console.log(query)
+
+        const cursor = productsCollection.find(query);
         const result = await cursor.toArray();
         res.send(result);
     })
 
     app.get('/products/:id', async (req, res) => {
         const id = req.params.id;
-        const query = {_id: new ObjectId(id)};
+        const query = {_id: id};
         const result = await productsCollection.findOne(query);
         res.send(result);
     })
@@ -75,6 +90,41 @@ async function run() {
         const id = req.params.id;
         const query = {_id: new ObjectId(id)};
         const result = await productsCollection.deleteOne(query);
+        res.send(result);
+    })
+
+
+    //bids api--------------------------------------------------------
+
+    app.get('/bids', async (req, res) => {
+
+       // const cursor = bidsCollection.find().sort({bid_price: -1}).limit(3).project({_id: 0, buyer_name: 1, bid_price: 1});
+
+       const cursor = bidsCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+
+
+    app.get('/bids/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = {_id: id};
+        const result = await bidsCollection.findOne(query);
+        res.send(result);
+    })
+
+
+    app.post('/bids', async (req, res) => {
+        const newBid =req.body;
+        const result = await bidsCollection.insertOne(newBid);
+        res.send(result);
+    })
+
+
+    app.delete('/bids/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = {_id: id};
+        const result = await bidsCollection.deleteOne(query);
         res.send(result);
     })
 
