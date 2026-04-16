@@ -42,15 +42,17 @@ async function run() {
         // const cursor = productsCollection.find().sort({price_min: -1}).skip(3).limit(3).project({_id: 0,title: 1, price_min: 1,email: 1});
 
         console.log(req.query)
-        const email = req.query.email;
-        console.log(email)
-        const query = {};
-        if(email){
-            query.email = email;
-        }
-        console.log(query)
+        
+        // const email = req.query.email;
+        // console.log(email)
+        // const condition = {};
+        // console.log(condition.email)
+        // if(email){
+        //     condition.email = email;
+        // }
+        // console.log(condition)
 
-        const cursor = productsCollection.find(query);
+        const cursor = productsCollection.find(req.query);
         const result = await cursor.toArray();
         res.send(result);
     })
